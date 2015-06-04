@@ -1,0 +1,102 @@
+<dom-module id="my-imgur">
+
+	<style>
+		:host {
+			display: none;
+		}
+	</style>
+
+	<template>
+		
+		<iron-ajax 
+			id="ironAjax"
+			auto
+			url="{{_url}}"
+			handleAs="json"
+			on-response="_handleResponse"
+			last-response="{{response}}"
+			headers='{{_headers}}'>
+		</iron-ajax>
+
+	</template>
+
+</dom-module>
+
+<script>
+	Polymer({
+
+		is: 'my-imgur',
+
+		properties: {
+			imgId: {
+		        type: String,
+		        value: null
+		    },			
+		    clientId: {
+		        type: String,
+		        value: null
+		    },
+		    response: {
+		    	type: Object,
+		    	value: null,
+		    	notify: true
+		    },
+			_headers: {
+				type: String, 
+				computed: '_computeHeaders(clientId)'
+			},
+			_url: {
+				type: String, 
+				computed: '_computeUrl(imgId)'
+			},
+			_src: {
+				type: String, 
+		        value: ''
+			},
+		},
+
+		_computeHeaders: function(clientId) {
+		    return {Authorization: "Client-ID " + clientId};
+		},
+
+		_computeUrl: function(imgId) {
+		    // Matches direct url to the image. Example: http://i.imgur.com/aBc123.gif
+		    var imgur_image_pattern = RegExp("^https?:\/\/(?:www\.)?i\.imgur\.com\/([a-zA-Z0-9&,]+)\.((jpg)|(gif)|(png))", "i");
+
+		    // Matches album url to the image. Example: http://i.imgur.com/a/aBc123.gif
+		    var imgur_album_url_pattern = RegExp("^https?://(?:www\.)?imgur\.com/a/([a-zA-Z0-9&,]+)", "i");
+
+		    // Matches gallery url to the image. Example: http://imgur.com/gallery/aBc123
+		    var imgur_gallery_url_pattern = RegExp("^https?://(?:www\.)?imgur\.com/gallery/([a-zA-Z0-9&,]+)", "i");
+
+		    // Matches an image short link. Example: http://imgur.com/aBc123
+		    var imgur_hashes_pattern = RegExp("imgur\.com/(([a-zA-Z0-9]{5,7}[&,]?)+)", "i");
+
+		    if (imgur_image_pattern.exec(imgId)) {
+		    	var match = imgur_image_pattern.exec(imgId);
+		    	if (match) { var id = match[1].split(/[,&]/);}
+		    	return "https://api.imgur.com/3/image/" + id + ".json";
+		    } else if (imgur_album_url_pattern.exec(imgId)) {
+		    	var match = imgur_album_url_pattern.exec(imgId);
+		    	if (match) { var id = match[1].split(/[,&]/); }
+		    	return "https://api.imgur.com/3/album/" + id + ".json";
+		    } else if (imgur_gallery_url_pattern.exec(imgId)) {
+		    	var match = imgur_gallery_url_pattern.exec(imgId);
+		    	if (match) { var id = match[1].split(/[,&]/); }
+		    	return "https://api.imgur.com/3/gallery/" + id + ".json";
+		    } else if (imgur_hashes_pattern.exec(imgId)) {
+		    	var match = imgur_hashes_pattern.exec(imgId);
+		    	if (match) { var id = match[1].split(/[,&]/); }
+		    	return "https://api.imgur.com/3/image/" + id + ".json";
+		    } else {
+		    	console.log("Unknown imgur link: ", imgId);
+		    	return "";
+		    }
+		},
+
+		_handleResponse: function() {
+			this.fire("response-received");
+		}
+
+	});
+</script>

@@ -1,0 +1,65 @@
+<dom-module id="my-post-list">
+
+	<style>
+		:host {
+			display: block;
+			background-color: #eee;
+		}
+	</style>
+
+	<template>
+
+		<div class="vertical layout center">
+			<paper-spinner active="{{loading}}"></paper-spinner>
+		</div>
+
+		<template is="dom-repeat" items="{{posts}}">
+			<my-post-card post="{{item}}"></my-post-card>
+		</template>
+
+	</template>
+
+</dom-module>
+
+<script>
+	Polymer({
+		is: 'my-post-list',
+
+		behaviors: [Polymer.NeonAnimatableBehavior,	Polymer.NeonAnimationRunnerBehavior],
+
+  		properties: {
+		  	loading: {type: Boolean, value:false},
+		  	posts: {
+		  		type: Array,
+		  		value: function() {return [];},
+		  		notify: true
+		  	},
+		  	animationConfig: {
+		  		type: Object,
+		  		value: function() {	return {
+		  				'entry': [ 
+		  					{ name: 'cascaded-animation', 
+		  					animation: 'fade-in-animation',        
+		  					timing: { delay: 200 }
+		  					}
+	  					]
+		  			}
+		  		}
+		  	}
+		},
+
+		onTap: function(event) {
+			this.selected = event.model.item;
+			this.fire('item-click');
+		},
+
+	    loadList: function() {
+	    	this.async(function() {
+	    		var nodeList = Polymer.dom(this.root).querySelectorAll('my-post-card');
+	    		this.animationConfig['entry'][0].nodes = Array.prototype.slice.call(nodeList);
+	    		this.playAnimation('entry');
+	    	});
+	    },
+
+	});
+</script>

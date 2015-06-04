@@ -1,0 +1,82 @@
+<dom-module id="my-post-card">
+
+	<style>
+		:host {
+			display: block;
+		}
+		
+		paper-material {
+			max-width: 640px;
+			margin: 10px auto;
+			padding: 0px;
+			background-color: #fff;
+		}
+
+		iron-icon {
+			color: var(--google-grey-500);
+		}
+
+		iron-image {
+			width: 100px;
+			height: 100px;
+			margin: 10px;
+			border: 1px solid gainsboro;
+			background-color: lightgrey;
+		}
+
+	</style>
+
+	<template>
+
+		<my-imgur 
+			id="imgurAjax" 
+			img-id="{{post.data.url}}"
+			client-id="{{clientId}}"
+			response="{{imgurResponse}}"
+			on-response-received="_handleResponse">
+		</my-imgur>
+
+		<paper-material elevation="1" on-tap="onTap" class="item horizontal layout">
+			<iron-image src="{{post.data.thumbnail}}" fade preload sizing="cover"></iron-image>
+			<paper-item-body three-line>
+				<div>{{post.data.title}}</div>
+				<div secondary>{{post.data.url}}</div>
+			</paper-item-body>
+			<iron-icon icon="info"></iron-icon>
+		</paper-material>
+
+	</template>
+
+</dom-module>
+
+<script>
+	Polymer({
+		is: 'my-post-card',
+
+		properties: {
+			post: {type: Object, value: null, notify: true},
+			clientId: {type: String, value: '278c58debf2f414'},
+			imgurResponse: {type: Object, value: null}
+		},
+
+		onTap: function(event) {
+			this.selected = event.model.item;
+			this.fire('item-click');
+		},
+
+		/* 
+			Adding to `post` the entire imgur json response.
+			If the img thumnail in the reddit json is not present the imgur direct link is used.
+		*/
+	    _handleResponse: function(event, res){
+	    	this.set('post.imgur_data', this.imgurResponse.data);
+	    	if (this.post.data.thumbnail == "") {
+	    		if (this.post.imgur_data.images_count > 0) {
+	    			this.set("post.data.thumbnail", this.post.imgur_data.images[1].link);
+	    		} else {
+	    			this.set("post.data.thumbnail", this.post.imgur_data.link);
+	    		}
+	    	}
+	    }
+	});
+</script>
