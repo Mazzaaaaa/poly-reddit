@@ -14,7 +14,7 @@
 		</div>
 
 		<template is="dom-repeat" items="{{posts}}">
-			<my-post-card post="{{item}}"></my-post-card>
+			<my-post-card post="{{item}}" on-tap="onTap"></my-post-card>
 		</template>
 
 	</template>
@@ -50,7 +50,7 @@
 
 		onTap: function(event) {
 			this.selected = event.model.item;
-			this.fire('item-click');
+			this.fire('item-tap');
 		},
 
 	    loadList: function() {
@@ -60,6 +60,10 @@
 	    		this.playAnimation('entry');
 	    	});
 	    },
+
+	    asd: function() {
+	    	console.log("aaaaaa");
+	    }
 
 	});
 </script>

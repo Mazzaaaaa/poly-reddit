@@ -1,30 +1,8 @@
 <dom-module id="my-post-card">
 
-	<style>
-		:host {
-			display: block;
-		}
-		
-		paper-material {
-			max-width: 640px;
-			margin: 10px auto;
-			padding: 0px;
-			background-color: #fff;
-		}
-
-		iron-icon {
-			color: var(--google-grey-500);
-		}
-
-		iron-image {
-			width: 100px;
-			height: 100px;
-			margin: 10px;
-			border: 1px solid gainsboro;
-			background-color: lightgrey;
-		}
-
-	</style>
+	<!-- build:css styles/main.css -->
+	<link rel="stylesheet" href="my-post-card.css">
+	<!-- endbuild-->
 
 	<template>
 
@@ -60,7 +38,7 @@
 		},
 
 		onTap: function(event) {
-			this.selected = event.model.item;
+			// this.selected = event.model.item;
 			this.fire('item-click');
 		},
 
