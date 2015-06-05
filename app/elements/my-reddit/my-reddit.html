@@ -14,7 +14,7 @@
 			handleAs="json"
 			params='{{settings.params}}'
 			loading="{{loading}}"
-			on-response="postsLoaded"
+			on-response="_postsLoaded"
 			last-response="{{response}}">
 		</iron-ajax>
 
@@ -31,6 +31,7 @@
 			url: {type: String, computed: "_computeUrl(settings.url.subreddit, settings.url.sort)"},
 			loading: {type: Boolean, value: false, notify: true},
 			json: {type: Array, value: function() {return [];}},
+			lastPostId: {type: String, value: null},
 			settings: {
 				type: Object, 
 				notify: true, 
@@ -62,17 +63,26 @@
 			return url;     	 
 		},
 
-	  	postsLoaded: function() {
+	  	_postsLoaded: function() {
 		  	this.json = this.response.data.children.slice(0);
-		  	this.posts = [];
+		  	// this.posts = [];
 		  	for (var i = 0; i < this.json.length; i++) {
 		  		item = this.json[i];
 	  			if (item.data.domain == "imgur.com" || item.data.domain == "i.imgur.com") {
 	  				this.push('posts', item);
-	  				this.lastPost = item.data.name;
+	  				this.lastPostId = item.data.name;
 				}
 			}
 			this.fire("posts-loaded");
+		},
+
+		go: function() {
+			this.$.ajax.generateRequest();
+		},
+
+		continue: function() {
+			this.set('settings.params.after', this.lastPostId);
+			this.go();
 		}
 
 	});

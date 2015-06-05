@@ -9,12 +9,8 @@
 
 	<template>
 
-		<div class="vertical layout center">
-			<paper-spinner active="{{loading}}"></paper-spinner>
-		</div>
-
 		<template is="dom-repeat" items="{{posts}}">
-			<my-post-card post="{{item}}" on-tap="onTap"></my-post-card>
+			<my-post-card post="{{item}}" on-tap="onTap" class="itemToAnimate"></my-post-card>
 		</template>
 
 	</template>
@@ -30,6 +26,11 @@
   		properties: {
 		  	loading: {type: Boolean, value:false},
 		  	posts: {
+		  		type: Array,
+		  		value: function() {return [];},
+		  		notify: true
+		  	},
+		  	selected: {
 		  		type: Array,
 		  		value: function() {return [];},
 		  		notify: true
@@ -55,15 +56,14 @@
 
 	    loadList: function() {
 	    	this.async(function() {
-	    		var nodeList = Polymer.dom(this.root).querySelectorAll('my-post-card');
+	    		var nodeList = Polymer.dom(this.root).querySelectorAll('.itemToAnimate');
 	    		this.animationConfig['entry'][0].nodes = Array.prototype.slice.call(nodeList);
 	    		this.playAnimation('entry');
+	    		for (i=0; i<=nodeList.length; i++) {
+	    			this.toggleClass('itemToAnimate', false, nodeList[i]);
+	    		}
 	    	});
 	    },
-
-	    asd: function() {
-	    	console.log("aaaaaa");
-	    }
 
 	});
 </script>

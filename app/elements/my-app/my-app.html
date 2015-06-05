@@ -6,11 +6,12 @@
 
 	<template>
 
-		<my-reddit id="myReddit" posts="{{posts}}" loading="{{loading}}" on-posts-loaded="_onPostsLoaded"></my-reddit>
+		<my-reddit id="myReddit" posts="{{posts}}" on-posts-loaded="_onPostsLoaded"></my-reddit>
+		<polymer-scroll-threshold id="threshold" lower-threshold="1" on-lower-trigger="_loadMore" fit></polymer-scroll-threshold>
 
 		<paper-drawer-panel id="paperDrawerPanel" forceNarrow>
 
-			<paper-header-panel main mode="waterfall">
+			<paper-header-panel main mode="waterfall" id="paperHeaderPanel">
 
 				<paper-toolbar id="mainToolbar">
 					<paper-icon-button id="button" on-click="_onButtonClick" disabled></paper-icon-button>
@@ -21,8 +22,8 @@
 				</paper-toolbar>
 
 				<neon-animated-pages id="pages" selected="0" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
-					<my-post-list id="postList" posts="{{posts}}" selected="{{selected}}" on-item-tap="_onItemTap" loading="{{loading}}"></my-post-list>
-					<my-post-detail data="{{selected}}"></my-post-detail>
+					<my-post-list id="postList" posts="{{posts}}" selected="{{selected}}" on-item-tap="_onItemTap"></my-post-list>
+					<!-- <my-post-detail post="{{selected}}"></my-post-detail> -->
 				</neon-animated-pages>
 
 			</paper-header-panel>
@@ -38,12 +39,13 @@
 		is: 'my-app',
 
 		properties: {
-			loading: {type: Boolean},
-			selected: {type: Object}
+			selected: {type: Object},
+			settings: {type: Object},
 		},
 
 		ready: function() {
-			this.$.myReddit.$.ajax.generateRequest();
+			this.$.threshold.scrollTarget = this.$.paperHeaderPanel.$.mainContainer;
+			this.$.myReddit.go();
 		},
 		_onItemTap: function() {
 			this.$.pages.selected = 1;
@@ -51,14 +53,18 @@
 			this.$.button.icon = "arrow-back";
 		},
 		_onPostsLoaded: function() {
-			console.log('_onPostsLoaded');
 			this.$.postList.loadList();
 		},
 		_onButtonClick: function() {
 			this.$.pages.selected = 0;
 			this.$.button.disabled = true;
 			this.$.button.icon = "";
-		}
+		},
+
+		_loadMore: function() {
+			this.$.myReddit.continue();
+			this.$.threshold.clearLower();
+		},
 
 	});
 </script>

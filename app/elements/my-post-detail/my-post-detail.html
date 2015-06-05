@@ -40,7 +40,16 @@
     </paper-toolbar> -->
 
     <!-- <div id="main" class="main"> -->
-    	<p>{{data.data.title}}</p>
+    	<p>{{post.data.title}}</p>
+
+		<template is="dom-if" if="_computeIf">
+
+		<template is="dom-repeat" items="{{post.data.imgur_data.images_count}}">
+        	<iron-image src="{{post.imgur_data.link}}"></iron-image>
+		</template>
+
+		</template>
+
       <div class="image-container">
         <div class="image">
         </div>
@@ -65,7 +74,7 @@
       //     };
       //   }
       // },
-      data: {
+      post: {
       	type: Object,
       	value: {},
       	notify: true
@@ -98,6 +107,10 @@
     _onClearButtonClick: function() {
       this.fire('close');
     },
+    _computeIf: function() {
+    	if (this.post.imgur_data.images_count > 1)
+    		return
+    }
 
   });
 </script>
