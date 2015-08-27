@@ -8,6 +8,3 @@ A simple reddit client built with Polymer.
   
 ## Demo
 <a href="http://mazzarolomatteo.com/polymer/poly-reddit/">Here</a> is a demo (2015-06-05).
-
-## Contacts  
-Email: Mazzarolomatteo@gmail.com
